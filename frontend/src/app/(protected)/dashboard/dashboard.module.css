@@ -1,0 +1,100 @@
+/* Dashboard Styles */
+.dashboard { animation: fadeIn 0.4s ease-out; }
+
+.kpiRow {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.kpiCard {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  transition: all 0.2s;
+}
+.kpiCard:hover {
+  border-color: var(--border-active);
+  transform: translateY(-2px);
+}
+.kpiIcon {
+  width: 46px; height: 46px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.kpiLabel { display: block; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+.kpiValue { display: block; font-size: 24px; font-weight: 800; margin-top: 2px; }
+.kpiSub { display: block; font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+/* Charts */
+.chartsRow {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.bottomRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+.chartCard {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  padding: 24px;
+}
+.chartCard h3 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+}
+.chartBody { min-height: 200px; }
+
+/* Legend */
+.legend { display: flex; flex-direction: column; gap: 8px; }
+.legendItem { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-secondary); }
+.legendDot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.legendItem strong { margin-left: auto; color: var(--text-primary); font-size: 13px; }
+
+/* Agent Leaderboard */
+.agentList { display: flex; flex-direction: column; gap: 12px; }
+.agentRow { display: flex; align-items: center; gap: 10px; }
+.agentRank { font-size: 12px; font-weight: 700; color: var(--text-muted); width: 24px; }
+.agentAvatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 12px; color: white; flex-shrink: 0;
+}
+.agentInfo { flex: 1; }
+.agentInfo strong { display: block; font-size: 13px; }
+.agentInfo span { font-size: 11px; color: var(--text-muted); }
+.agentBar {
+  width: 80px; height: 6px; border-radius: 3px; background: var(--bg-tertiary); overflow: hidden;
+}
+.agentBar > div {
+  height: 100%; border-radius: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .kpiRow { grid-template-columns: repeat(3, 1fr); }
+  .bottomRow { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .kpiRow { grid-template-columns: repeat(2, 1fr); }
+  .chartsRow { grid-template-columns: 1fr; }
+}
