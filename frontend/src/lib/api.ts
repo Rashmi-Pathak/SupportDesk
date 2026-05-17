@@ -7,12 +7,37 @@ import type { ApiResponse, Ticket, Customer, Order, Agent, Team, Comment, Escala
 const GAS_URL = process.env.NEXT_PUBLIC_GAS_URL || '';
 
 class ApiClient {
+  private cache = new Map<string, { data: any; expiry: number }>();
+
   private getToken(): string {
     if (typeof window === 'undefined') return '';
     return localStorage.getItem('sdcrm_token') || '';
   }
 
+  private invalidateCacheGroup(action: string) {
+    if (['createTicket', 'updateTicket', 'deleteTicket', 'assignTicket', 'escalateTicket', 'customerCreateTicket', 'customerAddReply'].includes(action)) {
+      // Clear all ticket cache entries
+      for (const key of Array.from(this.cache.keys())) {
+        if (key.startsWith('getTickets') || key.startsWith('getMyAssignedTickets') || key.startsWith('getUnassignedTickets') || key.startsWith('customerGetMyTickets') || key.startsWith('getDashboard')) {
+          this.cache.delete(key);
+        }
+      }
+    }
+    if (['updateOrderStatus', 'customerAddOrder', 'addOrderComment'].includes(action)) {
+      // Clear all order cache entries
+      for (const key of Array.from(this.cache.keys())) {
+        if (key.startsWith('getOrders') || key.startsWith('customerGetMyOrders') || key.startsWith('getDashboard')) {
+          this.cache.delete(key);
+        }
+      }
+    }
+    if (['logout'].includes(action)) {
+      this.cache.clear();
+    }
+  }
+
   private async request<T>(action: string, params: Record<string, unknown> = {}): Promise<ApiResponse<T>> {
+    this.invalidateCacheGroup(action);
     const token = this.getToken();
     const body = { action, token, ...params };
 
@@ -37,17 +62,37 @@ class ApiClient {
     }
   }
 
+  private async requestCached<T>(action: string, ttlMs: number, params: Record<string, unknown> = {}): Promise<ApiResponse<T>> {
+    const cacheKey = `${action}_${JSON.stringify(params)}`;
+    const cached = this.cache.get(cacheKey);
+    const now = Date.now();
+
+    if (cached && cached.expiry > now) {
+      return {
+        success: true,
+        data: cached.data as T,
+        timestamp: new Date().toISOString()
+      };
+    }
+
+    const res = await this.request<T>(action, params);
+    if (res.success && res.data) {
+      this.cache.set(cacheKey, { data: res.data, expiry: now + ttlMs });
+    }
+    return res;
+  }
+
   // --- Auth -----------------------------------------------------------------
   async login(email: string, password: string) {
     return this.request<{ userId: string; name: string; email: string; role: string; agentId: string; customerId: string; token: string; tokenExpiry: string }>('login', { email, password });
   }
 
-  async register(name: string, email: string, password: string) {
-    return this.request<{ userId: string; name: string; email: string; role: string; agentId: string; customerId: string; token: string; tokenExpiry: string }>('register', { name, email, password });
+  async register(name: string, email: string, password: string, role?: string) {
+    return this.request<{ userId: string; name: string; email: string; role: string; agentId: string; customerId: string; token: string; tokenExpiry: string }>('register', { name, email, password, role });
   }
 
   async getMe() {
-    return this.request<{ userId: string; name: string; email: string; role: string; agentId: string; customerId: string }>('getMe');
+    return this.requestCached<{ userId: string; name: string; email: string; role: string; agentId: string; customerId: string }>('getMe', 300000);
   }
 
   async logout() {
@@ -56,7 +101,7 @@ class ApiClient {
 
   // --- Tickets (Staff) -------------------------------------------------------
   async getTickets(params: Record<string, string | number> = {}) {
-    return this.request<Ticket[]>('getTickets', params);
+    return this.requestCached<Ticket[]>('getTickets', 10000, params);
   }
 
   async getTicketById(id: string) {
@@ -88,11 +133,11 @@ class ApiClient {
   }
 
   async getMyAssignedTickets(params: Record<string, string | number> = {}) {
-    return this.request<Ticket[]>('getMyAssignedTickets', params);
+    return this.requestCached<Ticket[]>('getMyAssignedTickets', 10000, params);
   }
 
   async getUnassignedTickets(params: Record<string, string | number> = {}) {
-    return this.request<Ticket[]>('getUnassignedTickets', params);
+    return this.requestCached<Ticket[]>('getUnassignedTickets', 10000, params);
   }
 
   // --- Tickets (Customer) ---------------------------------------------------
@@ -101,7 +146,7 @@ class ApiClient {
   }
 
   async customerGetMyTickets(params: Record<string, string | number> = {}) {
-    return this.request<Ticket[]>('customerGetMyTickets', params);
+    return this.requestCached<Ticket[]>('customerGetMyTickets', 10000, params);
   }
 
   async customerGetTicketById(id: string) {
@@ -114,16 +159,16 @@ class ApiClient {
 
   // --- Agents & Teams -------------------------------------------------------
   async getAgents(teamId?: string) {
-    return this.request<Agent[]>('getAgents', teamId ? { teamId } : {});
+    return this.requestCached<Agent[]>('getAgents', 300000, teamId ? { teamId } : {});
   }
 
   async getTeams() {
-    return this.request<Team[]>('getTeams');
+    return this.requestCached<Team[]>('getTeams', 300000);
   }
 
   // --- Customers ------------------------------------------------------------
   async getCustomers(params: Record<string, string | number> = {}) {
-    return this.request<Customer[]>('getCustomers', params);
+    return this.requestCached<Customer[]>('getCustomers', 60000, params);
   }
 
   async getCustomerById(id: string) {
@@ -132,7 +177,7 @@ class ApiClient {
 
   // --- Orders (Staff) -------------------------------------------------------
   async getOrders(params: Record<string, string | number> = {}) {
-    return this.request<Order[]>('getOrders', params);
+    return this.requestCached<Order[]>('getOrders', 10000, params);
   }
 
   async getOrderById(id: string) {
@@ -149,7 +194,7 @@ class ApiClient {
   }
 
   async customerGetMyOrders(params: Record<string, string | number> = {}) {
-    return this.request<Order[]>('customerGetMyOrders', params);
+    return this.requestCached<Order[]>('customerGetMyOrders', 10000, params);
   }
 
   async customerGetOrderById(id: string) {
@@ -157,7 +202,7 @@ class ApiClient {
   }
 
   async getOrdersByCustomer(customerId: string) {
-    return this.request<Order[]>('getOrdersByCustomer', { customerId });
+    return this.requestCached<Order[]>('getOrdersByCustomer', 10000, { customerId });
   }
 
   async addOrderComment(orderId: string, content: string, isInternal = false) {
@@ -184,7 +229,7 @@ class ApiClient {
 
   // --- Dashboard ------------------------------------------------------------
   async getDashboard() {
-    return this.request<DashboardStats>('getDashboard');
+    return this.requestCached<DashboardStats>('getDashboard', 15000);
   }
 
   // --- Attachments ----------------------------------------------------------
@@ -198,7 +243,7 @@ class ApiClient {
 
   // --- Notifications --------------------------------------------------------
   async getNotifications() {
-    return this.request<any[]>('getNotifications');
+    return this.requestCached<any[]>('getNotifications', 15000);
   }
 
   async markNotificationRead(notificationId: string) {

@@ -80,36 +80,82 @@ export function OrderHistory({ customerId }: { customerId: string }) {
   }
 
   return (
-    <div className="space-y-2">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
       {orders.map((order) => (
         <div 
           key={order.orderId}
-          className="group flex items-center justify-between p-3 bg-gray-900/40 border border-gray-800 rounded-lg hover:border-purple-500/50 transition-all cursor-pointer shadow-sm"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '12px',
+            background: 'rgba(255, 255, 255, 0.03)',
+            border: '1px solid var(--border-subtle)',
+            borderRadius: '10px',
+            transition: 'all 0.2s ease',
+            cursor: 'pointer',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = 'var(--primary-light)';
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = 'var(--border-subtle)';
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+          }}
         >
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded bg-purple-950/40 text-purple-400 flex items-center justify-center">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
+            <div style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '6px',
+              background: 'rgba(99, 102, 241, 0.1)',
+              color: 'var(--primary-light)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0
+            }}>
               <Package size={16} />
             </div>
-            <div>
-              <div className="text-xs font-bold text-gray-200 truncate max-w-[150px]">
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <div style={{
+                fontSize: '12px',
+                fontWeight: 'bold',
+                color: 'var(--text-primary)',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+              }}>
                 {order.product}
               </div>
-              <div className="text-[10px] text-gray-500">
-                {new Date(order.orderDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} • ${order.amount.toFixed(2)}
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                {new Date(order.orderDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} • <span style={{ color: 'var(--primary-light)', fontWeight: 600 }}>${order.amount.toFixed(2)}</span>
               </div>
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
-            <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${
-              order.status === 'Delivered' ? 'bg-green-950/30 text-green-400' :
-              order.status === 'Shipped' ? 'bg-blue-950/30 text-blue-400' :
-              order.status === 'Processing' ? 'bg-yellow-950/30 text-yellow-400' :
-              'bg-gray-800 text-gray-400'
-            }`}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+            <span style={{
+              fontSize: '10px',
+              padding: '2px 8px',
+              borderRadius: '9999px',
+              fontWeight: 600,
+              background: order.status === 'Delivered' ? 'rgba(34, 197, 94, 0.12)' :
+                          order.status === 'Shipped' ? 'rgba(59, 130, 246, 0.12)' :
+                          order.status === 'Processing' ? 'rgba(234, 179, 8, 0.12)' :
+                          order.status === 'Cancelled' ? 'rgba(239, 68, 68, 0.12)' :
+                          'rgba(255, 255, 255, 0.08)',
+              color: order.status === 'Delivered' ? '#4ade80' :
+                     order.status === 'Shipped' ? '#60a5fa' :
+                     order.status === 'Processing' ? '#facc15' :
+                     order.status === 'Cancelled' ? '#f87171' :
+                     'var(--text-secondary)'
+            }}>
               {order.status}
             </span>
-            <ChevronRight size={12} className="text-gray-600 group-hover:text-purple-400 transition-colors" />
+            <ChevronRight size={12} style={{ color: 'var(--text-muted)' }} />
           </div>
         </div>
       ))}

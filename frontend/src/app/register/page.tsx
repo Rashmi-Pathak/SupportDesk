@@ -22,11 +22,10 @@ export default function RegisterPage() {
     if (password !== confirm) { setError('Passwords do not match'); return; }
     if (password.length < 6) { setError('Password must be at least 6 characters'); return; }
     setLoading(true);
-    const res = await register(name, email, password);
+    const res = await register(name, email, password, 'Customer');
     setLoading(false);
     if (res.success) {
-      if (res.role === 'Customer') router.push('/portal');
-      else router.push('/dashboard');
+      router.push('/portal');
     } else {
       setError(res.error || 'Registration failed');
     }

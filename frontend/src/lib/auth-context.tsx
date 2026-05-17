@@ -13,7 +13,7 @@ interface AuthContextType {
   isAgent: boolean;
   isCustomer: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string; role?: string }>;
-  register: (name: string, email: string, password: string) => Promise<{ success: boolean; error?: string; role?: string }>;
+  register: (name: string, email: string, password: string, role?: string) => Promise<{ success: boolean; error?: string; role?: string }>;
   logout: () => Promise<void>;
 }
 
@@ -66,8 +66,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { success: false, error: res.error?.message || 'Login failed' };
   }, []);
 
-  const register = useCallback(async (name: string, email: string, password: string) => {
-    const res = await api.register(name, email, password);
+  const register = useCallback(async (name: string, email: string, password: string, role?: string) => {
+    const res = await api.register(name, email, password, role);
     if (res.success && res.data) {
       const u: User = {
         userId: res.data.userId,

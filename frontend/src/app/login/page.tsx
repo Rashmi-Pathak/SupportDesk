@@ -29,19 +29,6 @@ export default function LoginPage() {
     }
   };
 
-  const fillDemo = (role: 'admin' | 'agent' | 'customer') => {
-    if (role === 'admin') {
-      setEmail('admin@supportdesk.com');
-      setPassword('admin123');
-    } else if (role === 'agent') {
-      setEmail('sarah@supportdesk.com');
-      setPassword('agent123');
-    } else {
-      setEmail('customer1@example.com');
-      setPassword('customer123');
-    }
-  };
-
   return (
     <div className={styles.page}>
       <div className={styles.leftPanel}>
@@ -57,19 +44,6 @@ export default function LoginPage() {
           </div>
           <h2>Welcome back</h2>
           <p>Sign in to manage your support tickets and collaborate with your team.</p>
-
-          <div className={styles.demoCredentials}>
-            <span className={styles.demoLabel}>Quick Demo Login</span>
-            <button className={styles.demoBtn} onClick={() => fillDemo('admin')}>
-              🛡️ Admin Account
-            </button>
-            <button className={styles.demoBtn} onClick={() => fillDemo('agent')}>
-              👤 Agent Account
-            </button>
-            <button className={styles.demoBtn} onClick={() => fillDemo('customer')}>
-              🧑 Customer Account
-            </button>
-          </div>
         </div>
       </div>
 

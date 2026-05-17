@@ -74,6 +74,38 @@
 .settingMeta { display: flex; gap: 8px; }
 
 @media (max-width: 768px) {
-  .splitPage { flex-direction: column; }
-  .detailSide { width: 100%; }
+  .splitPage {
+    flex-direction: column;
+    height: auto !important;
+    overflow: visible !important;
+    margin: 0;
+  }
+  .listSide {
+    height: auto !important;
+    overflow: visible !important;
+    border-right: none;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .detailSide {
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    border-left: none;
+  }
+  .listHeader, .topBar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 12px;
+  }
+  .searchBar {
+    width: 100%;
+  }
+  .tableWrap {
+    padding: 0 8px;
+  }
+  .cardGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 }
