@@ -181,28 +181,4 @@ All requests use a unified JSON payload directed to the Google Apps Script Web A
 
 ---
 
-## 📬 Cover Letter Template for Submission
 
-Copy, complete, and submit this cover letter to **jignesh.ponamwar@datastraw.in** (CC: **hr@datastraw.in**):
-
-```markdown
-Dear Datastraw Hiring Team,
-
-Please accept this submission for the Customer Support & Order CRM Technical Project. I have built a fully normalized, high-performance, and visually stunning CRM featuring real-time Google Sheets relational synchronization, automated workloads, and a LLaMA 3.3 AI Copilot.
-
-### 🔗 Project Links
-- Deployed Web Application: [Insert Your Deployed Vercel/Netlify Frontend URL]
-- Google Sheets Dashboard: [Insert Your Spreadsheet Shareable Link]
-- GitHub Codebase: [Insert Your GitHub Repository URL]
-- Demo Video Walkthrough: [Insert YouTube/Loom Walkthrough Link]
-
-### 🏗️ Technical Highlights
-- Next.js & React SPA: Fully typed with strict TS, beautiful glassmorphic dark themes, and responsive split-views.
-- Normalization in Sheets: Developed a custom Object-Relational Mapper (ORM) matching 14 normalized tables in a single spreadsheet.
-- AI Copilots: Implemented dynamic sentiment analyses, auto-summarization, and one-click smart drafts powered by Groq LLaMA 3.3 APIs.
-
-Thank you for the opportunity! I look forward to your feedback.
-
-Best regards,
-[Your Name]
-```
